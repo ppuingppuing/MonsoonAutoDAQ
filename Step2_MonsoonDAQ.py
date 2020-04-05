@@ -2,28 +2,50 @@ import Monsoon.LVPM as LVPM
 import Monsoon.sampleEngine as sampleEngine
 import Monsoon.Operations as op
 
-import subprocess
+from datetime import datetime
 import threading
-from time import sleep
-
-# Monsoon Setup
-myMon = LVPM.Monsoon()
-myMon.setup_usb()
-myMon.setVout(4.0)
-
-# 매뉴얼에 있던 예제 1 - 콘솔 출력 및 단순 csv에 저장하기
-myEngine = sampleEngine.SampleEngine(myMon)
-myEngine.enableCSVOutput("MainEx.csv")
-myEngine.ConsoleOutput(True)
-
-numSamples = 5000
-myEngine.startSampling(numSamples)
 
 
-# 시스템에 따라 200 us 샘플링 속도를 못맞출 수도 있다네
+count = 0
 
-# myEngine = sampleEngine.SampleEngine(myMon)
-# myEngine.disableCSVOutput()
-#
-# myEngine.startSampling(5000)
-# samples = myEngine.getSamples()
+class MonsoonDAQ:
+
+    print("Monsoon Set up...")
+    mymon = LVPM.Monsoon()
+    mymon.setup_usb()
+    mymon.setVout(3.9)
+
+    myengine = sampleEngine.SampleEngine(mymon)
+    myengine.disableCSVOutput()
+    myengine.ConsoleOutput(False)
+    print("Monsoon Setting Finished...")
+
+    def __init__(self):
+        pass
+
+    def getsamples(self):
+        global count
+        print("Get Samples! [%6d] [" % count, datetime.utcnow().strftime('%H:%M:%S.%f'),"]")
+
+        self.myengine.startSampling(5000)
+        mysamples = self.myengine.getSamples()
+
+        currents = 0
+        for i in range(len(mysamples[sampleEngine.channels.timeStamp])):
+            currents += mysamples[sampleEngine.channels.MainCurrent][i]
+
+        mycurrents = currents/len(mysamples[sampleEngine.channels.timeStamp])
+
+        print(repr(mycurrents))
+
+        threading.Timer(3.88, self.getsamples).start()
+        count += 1
+
+
+def main():
+    mymonsoon = MonsoonDAQ()
+    mymonsoon.getsamples()
+
+
+if __name__ == "__main__":
+    main()
