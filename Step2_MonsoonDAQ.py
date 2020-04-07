@@ -29,7 +29,7 @@ class MonsoonDAQ:
 
     def getsamples(self):
         global count
-        print("Get Samples! [%6d] [" % count, datetime.utcnow().strftime('%H:%M:%S.%f'),"]")
+        print("[", datetime.utcnow().strftime('%H:%M:%S.%f'), "] Get Samples! [%6d]" % count)
 
         self.myengine.startSampling(5000)
         mysamples = self.myengine.getSamples()
@@ -46,7 +46,7 @@ class MonsoonDAQ:
         count += 1
 
     def setimages(self):
-        subprocess.call("adb devices", shell=True)
+        # subprocess.call("adb devices", shell=True)
         print("[", datetime.utcnow().strftime('%H:%M:%S.%f'), "] Daemon started... Unplug the phone!!!")
 
 
