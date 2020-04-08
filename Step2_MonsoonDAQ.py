@@ -2,6 +2,8 @@ import Monsoon.LVPM as LVPM
 import Monsoon.sampleEngine as sampleEngine
 import Monsoon.Operations as op
 
+import csv
+
 from datetime import datetime
 from time import sleep
 
@@ -10,6 +12,8 @@ import subprocess
 
 
 count = 0
+f = open('data.csv', 'w', newline='')
+wr = csv.writer(f)
 
 
 class MonsoonDAQ:
@@ -17,11 +21,12 @@ class MonsoonDAQ:
     print("Monsoon Set up...")  # 이거 뭐지..왜 돌지
     mymon = LVPM.Monsoon()
     mymon.setup_usb()
-    mymon.setVout(3.9)
+    # mymon.setVout(4)
 
     myengine = sampleEngine.SampleEngine(mymon)
     myengine.disableCSVOutput()
     myengine.ConsoleOutput(False)
+
     print("Monsoon Setting Finished...")
 
     def __init__(self):
@@ -29,6 +34,7 @@ class MonsoonDAQ:
 
     def getsamples(self):
         global count
+
         print("[", datetime.utcnow().strftime('%H:%M:%S.%f'), "] Get Samples! [%6d]" % count)
 
         self.myengine.startSampling(5000)
@@ -41,6 +47,7 @@ class MonsoonDAQ:
         mycurrents = currents/len(mysamples[sampleEngine.channels.timeStamp])
 
         print(repr(mycurrents))
+        wr.writerow([count, mycurrents])
 
         threading.Timer(3.88, self.getsamples).start()
         count += 1
