@@ -2,7 +2,7 @@ import subprocess
 import threading
 
 port_num = 5558
-col = 5
+col = 1    # 다시 측정할것부터
 
 
 def daemon_call():
@@ -16,9 +16,9 @@ def wifi_off():
 
 
 def main():
-    subprocess.call("adb connect 202.,,,:%d" % port_num, shell=True)
+    subprocess.call("adb connect ,,,:%d" % port_num, shell=True)
     subprocess.call("adb root", shell=True)
-    subprocess.call("adb connect 202.3,,,:%d" % port_num, shell=True)
+    subprocess.call("adb connect ,,,:%d" % port_num, shell=True)
 
     print("Daemon start! Wait 7s.... ")
 

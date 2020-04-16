@@ -35,7 +35,15 @@ class MonsoonDAQ:
     def getsamples(self):
         global count
 
-        print("[", datetime.utcnow().strftime('%H:%M:%S.%f'), "] Get Samples! [%6d]" % count)
+        print("getSamples() start...")
+        self.myengine.startSampling(5000)
+        mysamples = self.myengine.getSamples()
+
+        currents = 0
+        for i in range(len(mysamples[sampleEngine.channels.timeStamp])):
+            currents += mysamples[sampleEngine.channels.MainCurrent][i]
+
+        mycurrents1 = currents/len(mysamples[sampleEngine.channels.timeStamp])
 
         self.myengine.startSampling(5000)
         mysamples = self.myengine.getSamples()
@@ -44,12 +52,34 @@ class MonsoonDAQ:
         for i in range(len(mysamples[sampleEngine.channels.timeStamp])):
             currents += mysamples[sampleEngine.channels.MainCurrent][i]
 
-        mycurrents = currents/len(mysamples[sampleEngine.channels.timeStamp])
+        mycurrents2 = currents/len(mysamples[sampleEngine.channels.timeStamp])
 
+        self.myengine.startSampling(5000)
+        mysamples = self.myengine.getSamples()
+
+        currents = 0
+        for i in range(len(mysamples[sampleEngine.channels.timeStamp])):
+            currents += mysamples[sampleEngine.channels.MainCurrent][i]
+
+        mycurrents3 = currents/len(mysamples[sampleEngine.channels.timeStamp])
+
+        self.myengine.startSampling(5000)
+        mysamples = self.myengine.getSamples()
+
+        currents = 0
+        for i in range(len(mysamples[sampleEngine.channels.timeStamp])):
+            currents += mysamples[sampleEngine.channels.MainCurrent][i]
+
+        print("getSamples() end...")
+        mycurrents4 = currents/len(mysamples[sampleEngine.channels.timeStamp])
+
+        mycurrents = (mycurrents1+mycurrents2+mycurrents3+mycurrents4)/4
+
+        print("[", datetime.utcnow().strftime('%H:%M:%S.%f'), "] [%6d]" % count)
         print(repr(mycurrents))
         wr.writerow([count, mycurrents])
 
-        threading.Timer(3.88, self.getsamples).start()
+        threading.Timer(5.54, self.getsamples).start()
         count += 1
 
     def setimages(self):
