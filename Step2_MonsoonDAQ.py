@@ -1,15 +1,13 @@
 import Monsoon.LVPM as LVPM
 import Monsoon.sampleEngine as sampleEngine
-import Monsoon.Operations as op
 
 import csv
+import numpy
 
 from datetime import datetime
 from time import sleep
 
 import threading
-import subprocess
-
 
 count = 0
 f = open('data.csv', 'w', newline='')
@@ -21,7 +19,6 @@ class MonsoonDAQ:
     print("Monsoon Set up...")  # 이거 뭐지..왜 돌지
     mymon = LVPM.Monsoon()
     mymon.setup_usb()
-    # mymon.setVout(4)
 
     myengine = sampleEngine.SampleEngine(mymon)
     myengine.disableCSVOutput()
@@ -37,54 +34,63 @@ class MonsoonDAQ:
 
         print("getSamples() start...")
         self.myengine.startSampling(5000)
-        mysamples = self.myengine.getSamples()
-
-        currents = 0
-        for i in range(len(mysamples[sampleEngine.channels.timeStamp])):
-            currents += mysamples[sampleEngine.channels.MainCurrent][i]
-
-        mycurrents1 = currents/len(mysamples[sampleEngine.channels.timeStamp])
+        mysamples1 = self.myengine.getSamples()
 
         self.myengine.startSampling(5000)
-        mysamples = self.myengine.getSamples()
-
-        currents = 0
-        for i in range(len(mysamples[sampleEngine.channels.timeStamp])):
-            currents += mysamples[sampleEngine.channels.MainCurrent][i]
-
-        mycurrents2 = currents/len(mysamples[sampleEngine.channels.timeStamp])
+        mysamples2 = self.myengine.getSamples()
 
         self.myengine.startSampling(5000)
-        mysamples = self.myengine.getSamples()
-
-        currents = 0
-        for i in range(len(mysamples[sampleEngine.channels.timeStamp])):
-            currents += mysamples[sampleEngine.channels.MainCurrent][i]
-
-        mycurrents3 = currents/len(mysamples[sampleEngine.channels.timeStamp])
+        mysamples3 = self.myengine.getSamples()
 
         self.myengine.startSampling(5000)
-        mysamples = self.myengine.getSamples()
+        mysamples4 = self.myengine.getSamples()
 
-        currents = 0
-        for i in range(len(mysamples[sampleEngine.channels.timeStamp])):
-            currents += mysamples[sampleEngine.channels.MainCurrent][i]
+        self.myengine.startSampling(5000)
+        mysamples5 = self.myengine.getSamples()
+
+        self.myengine.startSampling(5000)
+        mysamples6 = self.myengine.getSamples()
+
+        self.myengine.startSampling(5000)
+        mysamples7 = self.myengine.getSamples()
+
+        self.myengine.startSampling(5000)
+        mysamples8 = self.myengine.getSamples()
+
+        self.myengine.startSampling(5000)
+        mysamples9 = self.myengine.getSamples()
+
+        self.myengine.startSampling(5000)
+        mysamples10 = self.myengine.getSamples()
+
+        # sample 중에서 전류채널은 [1]입니다. API guide 참
+        mysamples = mysamples1[1] + mysamples2[1] + mysamples3[1] + mysamples4[1] + mysamples5[1] \
+            + mysamples6[1] + mysamples7[1] + mysamples8[1] + mysamples9[1] + mysamples10[1]
 
         print("getSamples() end...")
-        mycurrents4 = currents/len(mysamples[sampleEngine.channels.timeStamp])
 
-        mycurrents = (mycurrents1+mycurrents2+mycurrents3+mycurrents4)/4
+        sample_mean = numpy.mean(mysamples)
+        sample_std = numpy.std(mysamples)
+
+        val_count = 0
+        mycurrents = 0
+        for i in range(len(mysamples)):
+            if mysamples[i] < sample_mean + sample_std and mysamples[i] > sample_mean - sample_std:
+                mycurrents = mycurrents + mysamples[i]
+                val_count += 1
+
+        current = mycurrents / val_count
 
         print("[", datetime.utcnow().strftime('%H:%M:%S.%f'), "] [%6d]" % count)
-        print(repr(mycurrents))
-        wr.writerow([count, mycurrents])
+        print(repr(current))
 
-        threading.Timer(5.54, self.getsamples).start()
+        threading.Timer(8.83, self.getsamples).start()
         count += 1
 
     def setimages(self):
         # subprocess.call("adb devices", shell=True)
-        print("[", datetime.utcnow().strftime('%H:%M:%S.%f'), "] Daemon started... Unplug the phone!!!")
+        # 원래는 여기서 데몬을 켜주려고 했으나 싱크를 맞추기 어려워서 직접 시작시키려고 새로 Step3를 만들었음,
+        print("[", datetime.utcnow().strftime('%H:%M:%S.%f'), "] Daemon start... Unplug the phone!!!")
 
 
 def main():

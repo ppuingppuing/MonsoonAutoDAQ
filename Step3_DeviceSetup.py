@@ -18,9 +18,9 @@ def wifi_off():
 
 
 def main():
-    subprocess.call("adb connect %s" % ip_s,":%d" % port_num, shell=True)
+    subprocess.call("adb connect ,,,:%d" % port_num, shell=True)
     subprocess.call("adb root", shell=True)
-    subprocess.call("adb connect %s" % ip_s, ":%d" % port_num, shell=True)
+    subprocess.call("adb connect ,,,:%d" % port_num, shell=True)
 
     print("Daemon start! Wait 7s.... ")
 
@@ -29,9 +29,6 @@ def main():
 
     myt1.start()
     # myt2.start() # thread not working.......
-
-
-
 
 
 if __name__ == "__main__":
