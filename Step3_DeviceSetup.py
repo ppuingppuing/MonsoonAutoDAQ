@@ -18,9 +18,11 @@ def wifi_off():
 
 
 def main():
-    subprocess.call("adb connect ,,,:%d" % port_num, shell=True)
+    connect_command = "adb connect " + ip_s + ":" + repr(port_num)
+
+    subprocess.call(connect_command, shell=True)
     subprocess.call("adb root", shell=True)
-    subprocess.call("adb connect ,,,:%d" % port_num, shell=True)
+    subprocess.call(connect_command, shell=True)
 
     print("Daemon start! Wait 7s.... ")
 

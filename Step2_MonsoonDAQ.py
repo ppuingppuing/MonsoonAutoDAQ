@@ -63,7 +63,7 @@ class MonsoonDAQ:
         self.myengine.startSampling(5000)
         mysamples10 = self.myengine.getSamples()
 
-        # sample 중에서 전류채널은 [1]입니다. API guide 참
+        # sample 중에서 전류채널은 [1]입니다. API guide 참고
         mysamples = mysamples1[1] + mysamples2[1] + mysamples3[1] + mysamples4[1] + mysamples5[1] \
             + mysamples6[1] + mysamples7[1] + mysamples8[1] + mysamples9[1] + mysamples10[1]
 
