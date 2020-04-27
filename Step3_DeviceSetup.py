@@ -2,7 +2,7 @@ import subprocess
 import threading
 
 port_num = 5558
-col = 1    # 다시 측정할것부터
+col = 3    # 다시 측정할것부터
 
 ip_f = open('ip.txt', mode='rt')
 ip_s = ip_f.read(13)
