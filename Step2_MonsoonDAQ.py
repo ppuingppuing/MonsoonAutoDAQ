@@ -50,20 +50,7 @@ class MonsoonDAQ:
         self.myengine.startSampling(5000)
         mysamples5 = self.myengine.getSamples()
 
-        self.myengine.startSampling(5000)
-        mysamples6 = self.myengine.getSamples()
 
-        self.myengine.startSampling(5000)
-        mysamples7 = self.myengine.getSamples()
-
-        self.myengine.startSampling(5000)
-        mysamples8 = self.myengine.getSamples()
-
-        self.myengine.startSampling(5000)
-        mysamples9 = self.myengine.getSamples()
-
-        self.myengine.startSampling(5000)
-        mysamples10 = self.myengine.getSamples()
 
         # sample 중에서 전류채널은 [1]입니다. API guide 참고
         mysamples_5 = mysamples1[1] + mysamples3[1] + mysamples5[1] + mysamples7[1] + mysamples9[1]
