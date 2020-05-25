@@ -11,6 +11,7 @@ import threading
 
 count = 0
 bc = datetime.utcnow().microsecond
+bcc = datetime.utcnow().second
 param = 1.5  # 간격에 따라 설정
 
 duty = 7
@@ -34,7 +35,7 @@ class MonsoonDAQ:
 
     def getsamples(self):
         global count
-        global bc
+        global bc, bcc
         global param
 
         global starttime
@@ -76,10 +77,11 @@ class MonsoonDAQ:
         # print("[%6d][ 5samples][sig=50]" % count)
         # print(repr(current50))
 
-        ac = datetime.utcnow().microsecond
+        ac = datetime.utcnow()
         print("[%s] " % ac, "[%s] " % bc, end=' ')
-        diff = ac-bc
-        bc = ac
+        diff = ac.microsecond-bc
+        bc = ac.microsecond
+
 
         if diff < 0:
             param = 1.35
@@ -88,9 +90,9 @@ class MonsoonDAQ:
         else:
             param = 1.5
 
-        print("%d " % diff, "%d " %duty)
-
-        temp = starttime;
+        print("%d " % diff, "%d " %(ac.second-bcc))
+        bcc = ac.second
+        temp = starttime
         starttime = time.time()
         print(starttime-temp)
 
