@@ -10,13 +10,8 @@ from time import sleep
 import threading
 
 count = 0
-bc = datetime.utcnow().microsecond
-bcc = datetime.utcnow().second
-param = 1.5  # 간격에 따라 설정
+bc = "  :  :  .      "
 
-duty = 7
-
-starttime = time.time() - param
 
 class MonsoonDAQ:
 
@@ -35,10 +30,7 @@ class MonsoonDAQ:
 
     def getsamples(self):
         global count
-        global bc, bcc
-        global param
-
-        global starttime
+        global bc
 
         self.myengine.startSampling(5000)
         mysamples1 = self.myengine.getSamples()
@@ -74,31 +66,14 @@ class MonsoonDAQ:
 
         current50 = mycurrents50 / val_count50
 
-        # print("[%6d][ 5samples][sig=50]" % count)
-        # print(repr(current50))
+        print(repr(current50))
 
-        ac = datetime.utcnow()
-        print("[%s] " % ac, "[%s] " % bc, end=' ')
-        diff = ac.microsecond-bc
-        bc = ac.microsecond
+        ac = datetime.utcnow().strftime('%H:%M:%S.%f')
+        print("[%s] " % ac, "[%s]" % bc)
+        bc = ac
 
-
-        if diff < 0:
-            param = 1.35
-        elif diff > 0:
-            param = 1.5
-        else:
-            param = 1.5
-
-        print("%d " % diff, "%d " %(ac.second-bcc))
-        bcc = ac.second
-        temp = starttime
-        starttime = time.time()
-        print(starttime-temp)
-
-        hey = datetime.utcnow().strftime('%H:%M:%S.%f')
-        print("[%s]" % hey)
-        threading.Timer(param, self.getsamples).start()
+        print("Get ready for the next measurements...")
+        threading.Timer(1.4, self.getsamples).start()
         count += 1
 
 
