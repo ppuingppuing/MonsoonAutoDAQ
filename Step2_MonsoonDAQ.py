@@ -1,6 +1,8 @@
 import Monsoon.LVPM as LVPM
 import Monsoon.sampleEngine as sampleEngine
 
+import Step3_DeviceSetup
+
 import numpy
 import time
 
@@ -9,9 +11,19 @@ from time import sleep
 
 import threading
 
+x = 0
+y = 0
 count = 0
+
+val_a = 0
+val_ac = 0
+val_ab = 0
+val_abcd = 0
+
 bc = "  :  :  .      "
 
+col = Step3_DeviceSetup.col
+pos = 8*(col-1)
 
 class MonsoonDAQ:
 
@@ -31,7 +43,11 @@ class MonsoonDAQ:
     def getsamples(self):
         global count
         global bc
+        global pos
 
+        global val_a, val_ab, val_ac, val_abcd
+
+        print("Start Sampling")
         self.myengine.startSampling(5000)
         mysamples1 = self.myengine.getSamples()
 
@@ -46,6 +62,7 @@ class MonsoonDAQ:
 
         self.myengine.startSampling(5000)
         mysamples5 = self.myengine.getSamples()
+        print("End Sampling")
 
         # sample 중에서 전류채널은 [1]입니다. API guide 참고
         mysamples_5 = mysamples1[1] + mysamples2[1] + mysamples3[1] + mysamples4[1] + mysamples5[1]
@@ -66,15 +83,61 @@ class MonsoonDAQ:
 
         current50 = mycurrents50 / val_count50
 
-        print(repr(current50))
+        # current50 = numpy.mean(mysamples_5)
 
         ac = datetime.utcnow().strftime('%H:%M:%S.%f')
-        print("[%s] " % ac, "[%s]" % bc)
+        print("[%s] " % ac, "[%s] " % bc, "/[%d] measured : " % count, repr(current50))
         bc = ac
 
-        print("Get ready for the next measurements...")
+        if count%4 == 0:
+            val_a = current50
+        elif count%4 == 1:
+            val_ab = current50
+        elif count%4 == 2:
+            val_ac = current50
+        elif count%4 == 3:
+            val_abcd = current50
+
+        if count % 4 == 3:
+            grid_val = val_abcd - val_ab - val_ac + val_a
+            self.store_val(int(pos/8), pos % 8, grid_val)
+            pos += 1
+
         threading.Timer(1.4, self.getsamples).start()
         count += 1
+
+    def store_val(self, x, y, value):
+        # t에 값을 저장함.
+        global col
+        f = open("val_t", 'r')
+        mymy = f.read().split(',')
+        f.close()
+
+        mymy[8*x+y] = value
+
+        f = open("val_t", 'w')
+        f.write(','.join(map(str,mymy)))
+        f.close()
+
+    def store_init(self):
+        # t에 있던 값을 init로 옮겨서 저장함
+        f = open("val_t", 'r')
+        old = f.read().split(',')
+        f.close()
+
+        f = open("val_init", 'w')
+        f.write(','.join(map(str,old)))
+        f.close()
+
+    def store_old_value(self):
+        # t에 있던 값을 t-1로 옮겨서 저장함
+        f = open("val_t", 'r')
+        old = f.read().split(',')
+        f.close()
+
+        f = open("val_t-1", 'w')
+        f.write(','.join(map(str,old)))
+        f.close()
 
 
 def main():
