@@ -5,6 +5,7 @@ import Step3_DeviceSetup
 
 import numpy
 import time
+import subprocess
 
 from datetime import datetime
 from time import sleep
@@ -102,6 +103,9 @@ class MonsoonDAQ:
             grid_val = val_abcd - val_ab - val_ac + val_a
             self.store_val(int(pos/8), pos % 8, grid_val)
             pos += 1
+            if pos >= 64:
+                self.send_data()
+                return
 
         threading.Timer(1.4, self.getsamples).start()
         count += 1
@@ -139,6 +143,9 @@ class MonsoonDAQ:
         f.write(','.join(map(str,old)))
         f.close()
 
+    def send_data(self):
+        # val_* 전체를 adb를 이용하여 전송
+        subprocess.call("adb shell push ./val_* /data/local/tmp", shell=True)
 
 def main():
     mymonsoon = MonsoonDAQ()
